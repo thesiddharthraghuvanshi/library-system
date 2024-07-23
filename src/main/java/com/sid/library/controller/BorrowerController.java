@@ -18,7 +18,7 @@ public class BorrowerController {
     BorrowerService borrowerService;
 
     @PostMapping("register")
-    public ResponseEntity<String> registerBorrower(@RequestParam String borrowerName, @RequestParam @Email(message = "Email Should be valid") String borrowerMail) {
+    public ResponseEntity<String> registerBorrower(@RequestParam String borrowerName, @RequestParam @Email(message = "Please provide a valid email address") String borrowerMail) {
         log.info("Inside registerBorrower | BorrowerController");
         return borrowerService.registerBorrower(borrowerName, borrowerMail);
     }

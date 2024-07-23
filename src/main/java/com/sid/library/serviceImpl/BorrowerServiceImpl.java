@@ -32,6 +32,14 @@ public class BorrowerServiceImpl implements BorrowerService {
     public ResponseEntity<String> registerBorrower(String name, String email) {
         log.info("Inside registerBorrower function | BorrowerService");
         try {
+            Borrower existingBorrower = borrowerRepository.findByEmail(email);
+
+            if(existingBorrower != null){
+                if(existingBorrower.getName().equalsIgnoreCase(name)) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Borrower with Email " + email+ " already exists with same name");
+                }
+            }
+
             Borrower borrower = new Borrower();
             borrower.setName(name);
             borrower.setEmail(email);
@@ -49,13 +57,18 @@ public class BorrowerServiceImpl implements BorrowerService {
     public ResponseEntity<BorrowerEto> borrowBook(Integer borrowerId, Integer bookId) {
         log.info("Inside borrowBook function | BorrowerService");
         try {
-            Book book = updateBookStatus(bookId, true);
+            log.warn("Calling bookRepository");
+            Optional<Book> book = bookRepository.findById(bookId);
 
-            if (book == null) {
+            if (book.isEmpty()) {
                 return ResponseEntity.notFound().build();
+            } else if(book.get().getBorrowed()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
             }
 
-            return updateBorrowerBooks(borrowerId, book, true);
+            Book updatedBook = updateBookStatus(book.get(), true);
+
+            return updateBorrowerBooks(borrowerId, updatedBook, true);
         } catch (Exception e) {
             log.error("Error at borrowBook: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Handle exception appropriately
@@ -67,31 +80,30 @@ public class BorrowerServiceImpl implements BorrowerService {
     public ResponseEntity<BorrowerEto> returnBook(Integer borrowerId, Integer bookId) {
         log.info("Inside returnBook function | BorrowerService");
         try {
-            Book book = updateBookStatus(bookId, false);
+            log.warn("Calling bookRepository");
+            Optional<Book> book = bookRepository.findById(bookId);
 
-            if (book == null) {
+            if (book.isEmpty()) {
                 return ResponseEntity.notFound().build();
+            } else if(!book.get().getBorrowed()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
             }
 
-            return updateBorrowerBooks(borrowerId, book, false);
+            Book updatedBook = updateBookStatus(book.get(), false);
+
+            return updateBorrowerBooks(borrowerId, updatedBook, false);
         } catch (Exception e) {
             log.error("Error at returnBook: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Handle exception appropriately
         }
     }
 
-    private Book updateBookStatus(Integer bookId, Boolean borrowed) {
+    private Book updateBookStatus(Book book, Boolean borrowed) {
         log.info("Inside updateBookStatus function | BorrowerService");
         try {
+            book.setBorrowed(borrowed);
             log.warn("Calling bookRepository");
-            Optional<Book> optionalBook = bookRepository.findById(bookId);
-            if (optionalBook.isPresent()) {
-                Book book = optionalBook.get();
-                book.setBorrowed(borrowed);
-                log.warn("Calling bookRepository");
-                return bookRepository.save(book);
-            }
-            return null;
+            return bookRepository.save(book);
         } catch (Exception e) {
             log.error("Error at updateBookStatus: " + e.getMessage());
             return null;
@@ -110,7 +122,11 @@ public class BorrowerServiceImpl implements BorrowerService {
                 if (borrowed) {
                     borrowedBooks.add(book);
                 } else {
-                    borrowedBooks.remove(book);
+                    if(borrowedBooks.contains(book)) {
+                        borrowedBooks.remove(book);
+                    } else {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+                    }
                 }
                 borrower.setBooks(borrowedBooks);
                 log.warn("Calling borrowerRepository");
