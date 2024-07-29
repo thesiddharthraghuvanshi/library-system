@@ -8,7 +8,7 @@ RESTful API that manages a Library System
     MySQL Server - for database
 
 ## Database Set-up
-    To create and set up a database for your Spring Boot application based on the provided properties file and entity classes, follow these steps:
+    To create and set up a database for Spring Boot application based on properties file and entity classes, follow these steps:
 
     1. Ensure MySQL Server is Running
 
@@ -57,28 +57,30 @@ RESTful API that manages a Library System
 
 ## RUN the application
     Method 1-
-    After building the project, you can start your Spring Boot application with Maven by using the Spring Boot Maven Plugin.
-    Run the following command:
-    "mvn spring-boot:run"
-    This command uses the Spring Boot Maven Plugin to start the application directly from the source code.
+        After building the project, you can start your Spring Boot application with Maven by using the Spring Boot Maven Plugin.
+        Run the following command:
+        "mvn spring-boot:run"
+        This command uses the Spring Boot Maven Plugin to start the application directly from the source code.
 
     Running the JAR File (Alternative Method) - 
-    If you prefer or if you have a packaged JAR file, you can run the application directly from the JAR file created during the build process.
-
-    Locate the JAR File:
-    After running "mvn clean package", the JAR file is typically located in the target directory of your project. 
-    The JAR file will be named something like library-system-0.0.1-SNAPSHOT.jar based on pom.xml.
-    Run the JAR File:
-    Use the java -jar command to run the JAR file. Replace your-jar-file.jar with the actual name of your JAR file:
-    "java -jar target/library-system-0.0.1-SNAPSHOT.jar"
-
-    Once you start the application, you should see log output indicating that Spring Boot has started. 
-    By default, Spring Boot applications run on port 8080. 
-    You can access the application by opening a web browser and navigating to:
+        If you prefer or if you have a packaged JAR file, you can run the application directly from the JAR file created during the build process.
+    
+        Locate the JAR File:
+        After running "mvn clean package", the JAR file is typically located in the target directory of your project. 
+        The JAR file will be named something like library-system-0.0.1-SNAPSHOT.jar based on pom.xml.
+        Run the JAR File:
+        Use the java -jar command to run the JAR file. Replace your-jar-file.jar with the actual name of your JAR file:
+        "java -jar target/library-system-0.0.1-SNAPSHOT.jar"
+    
+        Once you start the application, you should see log output indicating that Spring Boot has started. 
+        By default, Spring Boot applications run on port 8080. 
+        You can access the application by opening a web browser and navigating to below swagger url
     
 ## Swagger
 Use below link to open swagger html where you can hit and try the REST calls
     http://localhost:8080/swagger-ui/index.html
+
+Also you can use Postman, Insomnia or any other tool for API calls based on your preference. 
 
 ### Asumptions
     1- ISBN number is a string (alpah-numeric)
